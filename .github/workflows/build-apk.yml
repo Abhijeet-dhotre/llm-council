@@ -1,0 +1,27 @@
+# Builds the debug APK in the cloud — no Android Studio needed.
+# Push this project to a public GitHub repo, then run the workflow from
+# the Actions tab (or let it run on every push to main). The APK appears
+# under the run's Artifacts as "app-debug".
+name: Build APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.50.0"
+          channel: "stable"
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter build apk --debug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: build/app/outputs/flutter-apk/app-debug.apk
